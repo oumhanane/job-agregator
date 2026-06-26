@@ -1,6 +1,14 @@
 venv/
+.git/
+.gitignore
 __pycache__/
 *.pyc
-output/
-.git/
+*.pyo
+*.pyd
 
+output/
+
+.vscode/
+.idea/
+
+*.log

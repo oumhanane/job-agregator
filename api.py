@@ -8,6 +8,14 @@ app = FastAPI(title="Job Aggregator DevOps")
 
 
 # -------------------------
+# HEALTHCHECK / ROOT
+# -------------------------
+@app.get("/")
+def root():
+    return {"status": "job-aggregator running"}
+
+
+# -------------------------
 # COLLECTE DES JOBS
 # -------------------------
 def get_all_jobs():
@@ -67,6 +75,10 @@ def get_jobs(
         "jobs": filtered
     }
 
+
+# -------------------------
+# ENDPOINT STATS
+# -------------------------
 @app.get("/stats")
 def get_stats():
     jobs = get_all_jobs()
