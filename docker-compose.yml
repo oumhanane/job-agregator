@@ -1,0 +1,23 @@
+services:
+  job-aggregator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: job-aggregator
+
+    ports:
+      - "8000:8000"
+
+    restart: unless-stopped
+
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
