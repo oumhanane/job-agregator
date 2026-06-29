@@ -2,9 +2,10 @@ name: CI/CD Job Aggregator
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+    tags:
+      - "v*"
 
 env:
   IMAGE_NAME: job-aggregator
@@ -12,14 +13,14 @@ env:
 jobs:
 
   test:
-    name: Run Tests (pytest in Docker)
+    name: Tests (pytest)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Docker image
+      - name: Build Docker image (for tests)
         run: docker compose build
 
       - name: Run tests inside container
@@ -61,8 +62,29 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/job-aggregator:latest .
+      - name: Define image version
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+          else
+            echo "VERSION=latest" >> $GITHUB_ENV
+          fi
 
-      - name: Push image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/job-aggregator:latest
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/job-aggregator:${VERSION} .
+
+      - name: Tag latest (only on main)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/job-aggregator:${VERSION} \
+                     ${{ secrets.DOCKERHUB_USERNAME }}/job-aggregator:latest
+
+      - name: Push versioned image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/job-aggregator:${VERSION}
+
+      - name: Push latest (only main)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/job-aggregator:latest
