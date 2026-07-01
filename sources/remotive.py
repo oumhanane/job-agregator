@@ -1,10 +1,17 @@
 import requests
 from core.normalize import normalize
 
+
 def fetch():
     url = "https://remotive.com/api/remote-jobs?search=devops"
-    data = requests.get(url).json()
 
-    jobs = data["jobs"]
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+    except requests.RequestException:
+        return []
 
-    return [normalize(j, "remotive") for j in jobs]
+    jobs = data.get("jobs", [])
+
+    return [normalize(job, "remotive") for job in jobs]

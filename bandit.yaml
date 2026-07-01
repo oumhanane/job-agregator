@@ -1,0 +1,7 @@
+exclude_dirs:
+  - venv
+  - tests
+  - __pycache__
+  - .git
+  - output
+  - static
