@@ -1,5 +1,6 @@
 {
   "name": "job-aggregator",
+  "private": true,
   "version": "1.0.0",
   "description": "Projet personnel de **job aggregator** développé avec **FastAPI**, containerisé avec **Docker**, et automatisé avec une **pipeline CI/CD GitHub Actions**.",
   "main": "index.js",
