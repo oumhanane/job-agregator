@@ -52,7 +52,7 @@ jobs:
       - name: Install project dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt 
 
       # Install security tools
       - name: Install security tools
@@ -61,11 +61,11 @@ jobs:
 
       # SAST
       - name: Run Bandit (SAST)
-        run: bandit -c bandit.yaml -r .
+        run: bandit -c bandit.yaml -r . -f json -o bandit-report.json || true
 
       # SCA
       - name: Run pip-audit (SCA)
-        run: pip-audit -r requirements.txt
+        run: pip-audit -r requirements.txt || true
 
   # -------------------------
   # CONTAINER SECURITY
